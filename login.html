@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ammar King Login</title>
+  <style>
+    * {margin:0; padding:0; box-sizing:border-box; font-family:"Courier New",monospace;}
+    body {
+      background:black; color:#00bfff;
+      overflow:hidden; display:flex; justify-content:center; align-items:center; height:100vh;
+    }
+    canvas {position:fixed; top:0; left:0; z-index:0;}
+    .card {
+      z-index:2; width:90%; max-width:420px;
+      background:rgba(0,0,30,0.7); border:1px solid #00bfff;
+      border-radius:15px; padding:30px; text-align:center;
+      box-shadow:0 0 25px #00bfff; backdrop-filter:blur(10px);
+      animation:glow 2s infinite alternate;
+    }
+    @keyframes glow {from{box-shadow:0 0 10px #00bfff;} to{box-shadow:0 0 30px #00ffff;}}
+    h1 {text-shadow:0 0 25px #00bfff; margin-bottom:20px;}
+    input {
+      width:100%; padding:12px; margin:10px 0;
+      background:rgba(0,0,0,0.7); border:1px solid #00bfff; border-radius:8px;
+      color:#00bfff; text-align:center;
+    }
+    input:focus {box-shadow:0 0 15px #00ffff; outline:none;}
+    button {
+      width:100%; padding:12px; background:#00bfff;
+      color:black; border:none; border-radius:8px;
+      font-weight:bold; margin-top:10px; cursor:pointer; transition:0.3s;
+    }
+    button:hover {background:#00ffff; box-shadow:0 0 20px #00ffff;}
+    .link {color:#00ffff; text-decoration:underline; cursor:pointer;}
+    .hidden {display:none;}
+  </style>
+</head>
+<body>
+  <canvas id="matrix"></canvas>
+
+  <div class="card">
+    <h1>🔐 Ammar King AI Login</h1>
+
+    <div id="loginForm">
+      <input id="loginUser" type="text" placeholder="Username" />
+      <input id="loginPass" type="password" placeholder="Password" />
+      <button onclick="login()">Login</button>
+      <p>New user? <span class="link" onclick="toggleForm('signup')">Create Account</span></p>
+    </div>
+
+    <div id="signupForm" class="hidden">
+      <input id="signupUser" type="text" placeholder="Choose Username" />
+      <input id="signupPass" type="password" placeholder="Choose Password" />
+      <button onclick="signup()">Sign Up</button>
+      <p>Already have account? <span class="link" onclick="toggleForm('login')">Login</span></p>
+    </div>
+  </div>
+
+  <script>
+    // Matrix rain
+    const canvas=document.getElementById("matrix"),ctx=canvas.getContext("2d");
+    canvas.height=window.innerHeight; canvas.width=window.innerWidth;
+    const letters="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*";
+    const fontSize=16; const columns=canvas.width/fontSize; const drops=[];
+    for(let i=0;i<columns;i++) drops[i]=1;
+    function draw(){
+      ctx.fillStyle="rgba(0,0,20,0.05)";
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+      ctx.fillStyle="#00bfff";
+      ctx.font=fontSize+"px monospace";
+      for(let j=0;j<drops.length;j++){
+        const text=letters.charAt(Math.floor(Math.random()*letters.length));
+        ctx.fillText(text,j*fontSize,drops[j]*fontSize);
+        if(drops[j]*fontSize>canvas.height && Math.random()>0.975) drops[j]=0;
+        drops[j]++;
+      }
+    }
+    setInterval(draw,33);
+
+    // Toggle login/signup
+    function toggleForm(t){
+      document.getElementById("loginForm").classList.toggle("hidden",t!=="login");
+      document.getElementById("signupForm").classList.toggle("hidden",t!=="signup");
+    }
+
+    function signup(){
+      const u=document.getElementById("signupUser").value.trim();
+      const p=document.getElementById("signupPass").value.trim();
+      if(!u||!p){alert("Enter username and password!");return;}
+      if(localStorage.getItem("user_"+u)){alert("User already exists!");return;}
+      localStorage.setItem("user_"+u,p);
+      alert("Signup successful! You can now login.");
+      toggleForm("login");
+    }
+
+    function login(){
+      const u=document.getElementById("loginUser").value.trim();
+      const p=document.getElementById("loginPass").value.trim();
+      if(localStorage.getItem("user_"+u)===p){
+        localStorage.setItem("activeUser",u);
+        window.location.href="index.html";
+      } else alert("Invalid username or password!");
+    }
+  </script>
+</body>
+</html>
